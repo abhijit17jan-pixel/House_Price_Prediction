@@ -1,0 +1,97 @@
+{
+  "best_model": "XGBoost",
+  "uses_scaled_input": false,
+  "results": {
+    "Linear Regression": {
+      "MAE": 3277572.16,
+      "MSE": 19885842721626.7,
+      "RMSE": 4459354.52,
+      "R2": 0.6636
+    },
+    "Random Forest": {
+      "MAE": 1236116.61,
+      "MSE": 3023171622331.98,
+      "RMSE": 1738727.01,
+      "R2": 0.9489
+    },
+    "XGBoost": {
+      "MAE": 905152.19,
+      "MSE": 1612458098688.0,
+      "RMSE": 1269826.01,
+      "R2": 0.9727
+    }
+  },
+  "feature_cols": [
+    "Area_sqft",
+    "Bedrooms",
+    "Bathrooms",
+    "Balconies",
+    "Floor_No",
+    "Total_Floors",
+    "Age_of_Property",
+    "Parking_Spaces",
+    "Nearby_Schools",
+    "Nearby_Hospitals",
+    "Public_Transport_Score",
+    "Has_Garden",
+    "Has_Gym",
+    "Has_Swimming_Pool",
+    "Has_Security",
+    "Has_Power_Backup",
+    "Total_Rooms",
+    "Is_New_Property",
+    "Amenity_Score",
+    "Floor_Ratio",
+    "Distance_to_Metro_km",
+    "Gated_Community",
+    "Monthly_Maintenance_Charges",
+    "City_enc",
+    "Locality_Tier_enc",
+    "Property_Type_enc",
+    "Furnishing_enc",
+    "Facing_Direction_enc",
+    "Water_Supply_Type_enc",
+    "Construction_Quality_enc"
+  ],
+  "categorical_options": {
+    "City": [
+      "Kanpur",
+      "Lucknow",
+      "Noida",
+      "Prayagraj",
+      "Varanasi"
+    ],
+    "Locality_Tier": [
+      "High",
+      "Low",
+      "Medium"
+    ],
+    "Property_Type": [
+      "Apartment",
+      "Independent House",
+      "Villa"
+    ],
+    "Furnishing": [
+      "Fully-Furnished",
+      "Semi-Furnished",
+      "Unfurnished"
+    ],
+    "Facing_Direction": [
+      "East",
+      "North",
+      "North-East",
+      "South",
+      "West"
+    ],
+    "Water_Supply_Type": [
+      "Borewell",
+      "Both",
+      "Municipal"
+    ],
+    "Construction_Quality": [
+      "Premium",
+      "Standard",
+      "Ultra-Luxury"
+    ]
+  }
+}
