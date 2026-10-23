@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Log in — Valuation Desk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="blueprint-grid"></div>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="{{ url_for('home') }}">
+      <span class="brand-mark">⌂</span>
+      <div class="brand-text">
+        <span class="brand-title">Valuation Desk</span>
+        <span class="brand-sub">Property Assessment &amp; Price Estimation</span>
+      </div>
+    </a>
+    <nav class="header-nav">
+      <a class="nav-link" href="{{ url_for('register') }}">Need an account?</a>
+    </nav>
+  </div>
+</header>
+
+<main class="auth-wrap">
+  <div class="auth-card">
+    <p class="eyebrow">Access the desk</p>
+    <h1>Log in</h1>
+    <p class="auth-copy">Sign in to open the valuation dashboard and run property assessments.</p>
+
+    {% if error %}
+      <div class="form-error">{{ error }}</div>
+    {% endif %}
+
+    <form method="POST" class="auth-form">
+      <label class="field">
+        <span>Email</span>
+        <input type="email" name="email" required autofocus value="{{ request.form.get('email', '') }}">
+      </label>
+      <label class="field">
+        <span>Password</span>
+        <input type="password" name="password" required>
+      </label>
+      <button type="submit" class="submit-btn">Log in</button>
+    </form>
+
+    <p class="auth-switch">Don't have an account? <a href="{{ url_for('register') }}">Register here</a></p>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <span>AIML Summer Internship 2026 · IIHMF, MNNIT Allahabad, Prayagraj</span>
+  <span>House Price Prediction System — Flask Deployment</span>
+</footer>
+
+</body>
+</html>

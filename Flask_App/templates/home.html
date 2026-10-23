@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Valuation Desk — House Price Estimator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="blueprint-grid"></div>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="{{ url_for('home') }}">
+      <span class="brand-mark">⌂</span>
+      <div class="brand-text">
+        <span class="brand-title">Valuation Desk</span>
+        <span class="brand-sub">Property Assessment &amp; Price Estimation</span>
+      </div>
+    </a>
+    <nav class="header-nav">
+      {% if session.get('user_id') %}
+        <a class="nav-link" href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a class="nav-btn" href="{{ url_for('logout') }}">Log out</a>
+      {% else %}
+        <a class="nav-link" href="{{ url_for('login') }}">Log in</a>
+        <a class="nav-btn" href="{{ url_for('register') }}">Register</a>
+      {% endif %}
+    </nav>
+  </div>
+</header>
+
+<main class="landing">
+
+  <section class="hero">
+    <p class="eyebrow">Capstone Project — House Price Prediction System</p>
+    <h1>An assessment desk for<br>what a property is really worth.</h1>
+    <p class="hero-copy">
+      Enter a property's structure, location and amenities and receive an
+      instant, model-backed valuation — trained across Linear Regression,
+      Random Forest and XGBoost, and benchmarked against held-out sales data.
+    </p>
+    <div class="hero-actions">
+      {% if session.get('user_id') %}
+        <a class="btn-primary" href="{{ url_for('dashboard') }}">Go to dashboard →</a>
+      {% else %}
+        <a class="btn-primary" href="{{ url_for('register') }}">Open an account →</a>
+        <a class="btn-secondary" href="{{ url_for('login') }}">I already have one</a>
+      {% endif %}
+    </div>
+
+    <div class="hero-ticket">
+      <div class="ticket-top">
+        <span class="ticket-label">Sample Estimate</span>
+        <span class="ticket-stamp">Certified Estimate</span>
+      </div>
+      <div class="ticket-amount">₹ 94,88,533</div>
+      <div class="ticket-sub">3 BHK · 1,500 sqft · High-tier locality, Lucknow</div>
+      <div class="ticket-divider"></div>
+      <div class="ticket-row"><span>Model engine</span><span>{{ best_model }}</span></div>
+      <div class="ticket-row"><span>Test R² score</span><span>{{ metrics[best_model]['R2'] }}</span></div>
+      <div class="ticket-seal">VD</div>
+    </div>
+  </section>
+
+  <section class="feature-strip">
+    <div class="feature">
+      <span class="feature-letter">A</span>
+      <h3>Structure &amp; size</h3>
+      <p>Area, bedrooms, bathrooms, floor level and building age all feed the estimate.</p>
+    </div>
+    <div class="feature">
+      <span class="feature-letter">B</span>
+      <h3>Location &amp; class</h3>
+      <p>City, locality tier, property type and nearby infrastructure shape local pricing.</p>
+    </div>
+    <div class="feature">
+      <span class="feature-letter">C</span>
+      <h3>Amenities on site</h3>
+      <p>Garden, gym, pool, security and power backup each carry a measurable premium.</p>
+    </div>
+  </section>
+
+  <section class="model-strip">
+    <span class="compare-title">Model comparison on held-out data</span>
+    <div class="model-compare">
+      {% for name, m in metrics.items() %}
+      <div class="compare-row {% if name == best_model %}compare-best{% endif %}">
+        <span class="compare-name">{{ name }}</span>
+        <div class="compare-bar-track"><div class="compare-bar" style="--bar-width: {{ (m['R2']*100)|round(1) }}%"></div></div>
+        <span class="compare-r2">{{ m['R2'] }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <span>AIML Summer Internship 2026 · IIHMF, MNNIT Allahabad, Prayagraj</span>
+  <span>House Price Prediction System — Flask Deployment</span>
+</footer>
+
+</body>
+</html>

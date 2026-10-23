@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Valuation Desk — House Price Estimator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="blueprint-grid"></div>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="{{ url_for('home') }}">
+      <span class="brand-mark">⌂</span>
+      <div class="brand-text">
+        <span class="brand-title">Valuation Desk</span>
+        <span class="brand-sub">Property Assessment &amp; Price Estimation</span>
+      </div>
+    </a>
+    <div class="header-meta">
+      <span class="meta-label">Engine</span>
+      <span class="meta-value">{{ best_model }}</span>
+      <span class="meta-divider">·</span>
+      <span class="meta-label">Accuracy (R²)</span>
+      <span class="meta-value">{{ metrics[best_model]['R2'] }}</span>
+      <span class="meta-divider">·</span>
+      <span class="meta-label">Signed in as</span>
+      <span class="meta-value">{{ session.get('user_name') }}</span>
+      <a class="logout-link" href="{{ url_for('logout') }}">Log out</a>
+    </div>
+  </div>
+</header>
+
+<main class="desk">
+
+  <section class="intro">
+    <p class="eyebrow">Capstone Project — House Price Prediction System</p>
+    <h1>Fill out the survey sheet.<br>Receive a certified estimate.</h1>
+    <p class="intro-copy">Enter the property's physical details, location tier and amenities below. The assessment engine — trained on Linear Regression, Random Forest and XGBoost, and calibrated against held-out sales — returns a live valuation on the ticket to the right.</p>
+  </section>
+
+  <div class="workspace">
+
+    <form id="valuation-form" class="survey">
+
+      <div class="survey-section">
+        <div class="section-head">
+          <span class="section-letter">A</span>
+          <h2>Structure &amp; Size</h2>
+        </div>
+        <div class="field-grid">
+          <label class="field">
+            <span>Area (sq ft)</span>
+            <input type="number" name="area_sqft" id="area_sqft" min="200" max="10000" value="1450" required>
+          </label>
+          <label class="field">
+            <span>Bedrooms</span>
+            <input type="number" name="bedrooms" id="bedrooms" min="1" max="10" value="3" required>
+          </label>
+          <label class="field">
+            <span>Bathrooms</span>
+            <input type="number" name="bathrooms" id="bathrooms" min="1" max="10" value="2" required>
+          </label>
+          <label class="field">
+            <span>Balconies</span>
+            <input type="number" name="balconies" id="balconies" min="0" max="6" value="1" required>
+          </label>
+          <label class="field">
+            <span>Floor number</span>
+            <input type="number" name="floor_no" id="floor_no" min="0" max="60" value="3" required>
+          </label>
+          <label class="field">
+            <span>Total floors in building</span>
+            <input type="number" name="total_floors" id="total_floors" min="1" max="60" value="8" required>
+          </label>
+          <label class="field">
+            <span>Age of property (yrs)</span>
+            <input type="number" name="age" id="age" min="0" max="80" value="5" required>
+          </label>
+          <label class="field">
+            <span>Parking spaces</span>
+            <input type="number" name="parking" id="parking" min="0" max="6" value="1" required>
+          </label>
+          <label class="field">
+            <span>Construction quality</span>
+            <select name="construction_quality" id="construction_quality">
+              {% for q in construction_qualities %}<option value="{{ q }}">{{ q }}</option>{% endfor %}
+            </select>
+          </label>
+          <label class="field">
+            <span>Monthly maintenance (₹)</span>
+            <input type="number" name="maintenance_charges" id="maintenance_charges" min="0" max="50000" value="2500" required>
+          </label>
+        </div>
+      </div>
+
+      <div class="survey-section">
+        <div class="section-head">
+          <span class="section-letter">B</span>
+          <h2>Location &amp; Classification</h2>
+        </div>
+        <div class="field-grid">
+          <label class="field">
+            <span>City</span>
+            <select name="city" id="city">
+              {% for c in cities %}<option value="{{ c }}">{{ c }}</option>{% endfor %}
+            </select>
+          </label>
+          <label class="field">
+            <span>Locality tier</span>
+            <select name="locality_tier" id="locality_tier">
+              {% for t in tiers %}<option value="{{ t }}" {% if t=='Medium' %}selected{% endif %}>{{ t }}</option>{% endfor %}
+            </select>
+          </label>
+          <label class="field">
+            <span>Property type</span>
+            <select name="property_type" id="property_type">
+              {% for p in ptypes %}<option value="{{ p }}">{{ p }}</option>{% endfor %}
+            </select>
+          </label>
+          <label class="field">
+            <span>Furnishing</span>
+            <select name="furnishing" id="furnishing">
+              {% for f in furnishings %}<option value="{{ f }}">{{ f }}</option>{% endfor %}
+            </select>
+          </label>
+          <label class="field">
+            <span>Nearby schools (count)</span>
+            <input type="number" name="schools" id="schools" min="0" max="20" value="3" required>
+          </label>
+          <label class="field">
+            <span>Nearby hospitals (count)</span>
+            <input type="number" name="hospitals" id="hospitals" min="0" max="20" value="2" required>
+          </label>
+          <label class="field">
+            <span>Facing direction</span>
+            <select name="facing_direction" id="facing_direction">
+              {% for d in facing_directions %}<option value="{{ d }}">{{ d }}</option>{% endfor %}
+            </select>
+          </label>
+          <label class="field">
+            <span>Water supply</span>
+            <select name="water_supply_type" id="water_supply_type">
+              {% for w in water_supply_types %}<option value="{{ w }}">{{ w }}</option>{% endfor %}
+            </select>
+          </label>
+          <label class="field">
+            <span>Distance to Metro (km)</span>
+            <input type="number" name="distance_to_metro" id="distance_to_metro" min="0.1" max="30.0" step="0.1" value="1.5" required>
+          </label>
+          <label class="field field-wide">
+            <span>Public transport accessibility <em id="transport_val">6</em>/10</span>
+            <input type="range" name="transport_score" id="transport_score" min="1" max="10" value="6">
+          </label>
+        </div>
+      </div>
+
+      <div class="survey-section">
+        <div class="section-head">
+          <span class="section-letter">C</span>
+          <h2>Amenities on Site</h2>
+        </div>
+        <div class="amenity-grid">
+          <label class="amenity"><input type="checkbox" name="garden" checked><span>Garden</span></label>
+          <label class="amenity"><input type="checkbox" name="gym"><span>Gym</span></label>
+          <label class="amenity"><input type="checkbox" name="pool"><span>Swimming pool</span></label>
+          <label class="amenity"><input type="checkbox" name="security" checked><span>Security</span></label>
+          <label class="amenity"><input type="checkbox" name="power_backup" checked><span>Power backup</span></label>
+          <label class="amenity"><input type="checkbox" name="gated_community" checked><span>Gated community</span></label>
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn">Assess property value</button>
+    </form>
+
+    <aside class="ticket-wrap">
+      <div class="ticket" id="ticket">
+        <div class="ticket-top">
+          <span class="ticket-label">Estimated Market Value</span>
+          <span class="ticket-stamp">Certified Estimate</span>
+        </div>
+        <div class="ticket-amount" id="ticket-amount">₹ —</div>
+        <div class="ticket-sub" id="ticket-sub">Complete the survey sheet and submit to generate a valuation.</div>
+        <div class="ticket-divider"></div>
+        <div class="ticket-row"><span>Model engine</span><span id="ticket-model">{{ best_model }}</span></div>
+        <div class="ticket-row"><span>Test R² score</span><span>{{ metrics[best_model]['R2'] }}</span></div>
+        <div class="ticket-row"><span>Mean abs. error</span><span>₹ {{ '{:,.0f}'.format(metrics[best_model]['MAE']) }}</span></div>
+        <div class="ticket-seal">VD</div>
+      </div>
+
+      <div class="model-compare">
+        <span class="compare-title">Model comparison</span>
+        {% for name, m in metrics.items() %}
+        <div class="compare-row {% if name == best_model %}compare-best{% endif %}">
+          <span class="compare-name">{{ name }}</span>
+          <div class="compare-bar-track"><div class="compare-bar" style="--bar-width: {{ (m['R2']*100)|round(1) }}%"></div></div>
+          <span class="compare-r2">{{ m['R2'] }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </aside>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <span>AIML Summer Internship 2026 · IIHMF, MNNIT Allahabad, Prayagraj</span>
+  <span>House Price Prediction System — Flask Deployment</span>
+</footer>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
